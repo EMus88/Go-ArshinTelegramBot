@@ -14,7 +14,7 @@ func main() {
 	botToken := "2122958020:AAF9C9hC5nmCrfuqF6GWMgVD4Pq-6uAPa3s"
 	botAPI := "https://api.telegram.org/bot"
 	botUrl := botAPI + botToken
-	arshinAPIUrl := "https://fgis.gost.ru/fundmetrology/eapi/vri?year=2021&rows=100&search=*874049432*&rows=100"
+	arshinAPIUrl := "https://fgis.gost.ru/fundmetrology/eapi/vri?year=2021&rows=100&search=*"
 
 	offset := 0
 	for {
@@ -35,7 +35,6 @@ func main() {
 				buffer.WriteString(searchResult.Organization)
 				buffer.WriteString(searchResult.TypeOfDevice)
 				buffer.WriteString(searchResult.DeviceNumber)
-
 			}
 
 			err = respond(botUrl, buffer, update)
@@ -90,6 +89,8 @@ func respond(botUrl string, bufDevices bytes.Buffer, update Update) error {
 	var botMessage BotMessage
 	botMessage.ChatId = update.Message.Chat.ChatId
 	botMessage.Text = bufDevices.String()
+	fmt.Println("---------------------")
+	fmt.Println(botMessage.Text)
 	buf, err := json.Marshal(botMessage)
 	if err != nil {
 		return err
