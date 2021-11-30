@@ -36,4 +36,5 @@ type Result struct {
 type Device struct {
 	Organization string `json:"org_title"`
 	TypeOfDevice string `json:"mit_title"`
+	DeviceNumber string `json:"mi_number"`
 }
