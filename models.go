@@ -36,4 +36,5 @@ type Device struct {
 	Organization string `json:"org_title"`
 	TypeOfDevice string `json:"mit_title"`
 	DeviceNumber string `json:"mi_number"`
+	ValidDate    string `json:"valid_date"`
 }

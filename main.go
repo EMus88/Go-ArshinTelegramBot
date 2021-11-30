@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -25,16 +26,17 @@ func main() {
 		}
 		for _, update := range updates {
 
-			arshinSearchInputText := update.Message.Text
+			arshinSearchInputText := url.QueryEscape(update.Message.Text)
 			searchResults, err := getInfoFromArshin(arshinAPIUrl, arshinSearchInputText)
 			if err != nil {
 				log.Println("Arshin error: ", err.Error())
 			}
 			buffer := bytes.Buffer{}
 			for _, searchResult := range searchResults {
-				buffer.WriteString(searchResult.Organization)
-				buffer.WriteString(searchResult.TypeOfDevice)
-				buffer.WriteString(searchResult.DeviceNumber)
+				buffer.WriteString("Организация поверитель " + searchResult.Organization)
+				buffer.WriteString("Тип СИ " + searchResult.TypeOfDevice)
+				buffer.WriteString("Заводсткой номер " + searchResult.DeviceNumber)
+				buffer.WriteString("Действительно до " + searchResult.ValidDate)
 			}
 
 			err = respond(botUrl, buffer, update)
