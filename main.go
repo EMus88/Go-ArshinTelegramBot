@@ -15,6 +15,7 @@ func main() {
 	botAPI := "https://api.telegram.org/bot"
 	botUrl := botAPI + botToken
 	arshinAPIUrl := "https://fgis.gost.ru/fundmetrology/eapi/vri?year=2021&rows=100&search=*874049432*&rows=100"
+
 	offset := 0
 	for {
 
@@ -24,14 +25,17 @@ func main() {
 		}
 		for _, update := range updates {
 
-			searchResults, err := getInfoFromArshin(arshinAPIUrl)
+			arshinSearchInputText := update.Message.Text
+			searchResults, err := getInfoFromArshin(arshinAPIUrl, arshinSearchInputText)
 			if err != nil {
 				log.Println("Arshin error: ", err.Error())
 			}
 			buffer := bytes.Buffer{}
 			for _, searchResult := range searchResults {
 				buffer.WriteString(searchResult.Organization)
-				fmt.Println(searchResult.Organization)
+				buffer.WriteString(searchResult.TypeOfDevice)
+				buffer.WriteString(searchResult.DeviceNumber)
+
 			}
 
 			err = respond(botUrl, buffer, update)
@@ -63,8 +67,8 @@ func getUpdates(botUrl string, offset int) ([]Update, error) {
 	return restResponse.Result, nil
 }
 
-func getInfoFromArshin(arshinApiUrl string) ([]Device, error) {
-	resp, err := http.Get(arshinApiUrl)
+func getInfoFromArshin(arshinApiUrl string, searchText string) ([]Device, error) {
+	resp, err := http.Get(arshinApiUrl + searchText + "*&rows=100")
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +77,6 @@ func getInfoFromArshin(arshinApiUrl string) ([]Device, error) {
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Println(bytes.NewBuffer(body))
 	var restResponse RestResponseDevices
 	err = json.Unmarshal(body, &restResponse)
 	if err != nil {
